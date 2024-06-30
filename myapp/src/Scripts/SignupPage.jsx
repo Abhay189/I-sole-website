@@ -1,79 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './SignupPage.css'; // Make sure this is the correct path to your CSS file
-import logoImage from './images/logo.png'; // Update with the correct path to your logo image
-import google from './images/google.png'; // Update with the correct path to your logo image
-import outlook from './images/outlook.png'; // Update with the correct path to your logo image
+import '../Styles/SignupPage.css'; // Make sure this is the correct path to your CSS file
+import logoImage from '../images/logo.png'; // Update with the correct path to your logo image
+import google from '../images/google.png'; // Update with the correct path to your logo image
+import outlook from '../images/outlook.png'; // Update with the correct path to your logo image
 import { useNavigate  } from 'react-router-dom';
 
+
+let connectionURL = localStorage.getItem('API_URL');
 const SignupPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState('Patient'); // Initialize role state
-  const [patientID, setPatientID] = useState(''); // Initialize patientNumber state
   const [username, setUsername] = useState(''); // State for username
   const navigate = useNavigate();  // Hook to access the history instance
+
+  useEffect(
+    () => {
+      console.log(`api url from signup page -> ${connectionURL}`);
+    }, []
+  );
 
   const handleSignUp = async (e) => {
     e.preventDefault();
 
     try {
-        const signupResponse = await axios.post('https://i-sole-backend.com/signup', {
+        const signupResponse = await axios.post(`${connectionURL}/signup`, {
             username: username,
             email: email,
             password: password,
             fullName: fullName,
-            role: role,
-            patientID: role === 'Patient' ? '' : patientID,
         });
 
         if (signupResponse.data.success) {
             console.log("Account created successfully");
 
-            const { patientID, role } = signupResponse.data.user_data;
-
             // Store the username in local storage
             localStorage.setItem('curr_username', username);
-            localStorage.setItem('patientID', patientID);
-            localStorage.setItem('userRole', role);
 
-            // Call the initialize_counter endpoint only if role is 'Patient'
-            if (role === 'Patient') {
-              const counterResponse = await axios.post('https://i-sole-backend.com/initialize_counter', {
-                username: username,
-              });
-
-              if (counterResponse.data.success) {
-                console.log("Counter initialized successfully");
-              } else {
-                console.log("Failed to initialize counter");
-              }
-            }
-
-            navigate('/feedback');  // Redirect to '/feedback' route
+            navigate('/analytics');  // Redirect to '/feedback' route
         } else {
             console.log("Failed to create account");
         }
       } catch (error) {
           console.error('Error during sign up:', error);
       }
-  };
-
-
-  // Function to render the patient number input when role is Doctor or Family
-  const renderPatientNumberInput = () => {
-    if (role === 'Doctor' || role === 'Family') {
-      return (
-        <input
-          type="text"
-          placeholder="Patient ID"
-          value={patientID}
-          onChange={(e) => setPatientID(e.target.value)}
-        />
-      );
-    }
-    return null;
   };
 
   return (
@@ -128,22 +99,6 @@ const SignupPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <div className="dropdown-container">
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="Patient">Patient</option>
-                <option value="Family">Family</option>
-                <option value="Doctor">Doctor</option>
-              </select> 
-              <span className="dropdown-arrow">&#9660;</span>
-            </div>
-
-            {/* Render the patient number input based on the selected role */}
-           {renderPatientNumberInput()}
-
             <button type="submit" className="create-account-button">Create Account</button>
           </form>
           <div className="signup-footer">

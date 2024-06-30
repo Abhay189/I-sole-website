@@ -25,17 +25,22 @@
 body, html {
   font-family: 'Arial', sans-serif;
   font-size: 14px;
-  overflow-y: hidden;
 }
 
 .app {
   display: flex;
-  height: 100vh;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  min-width: 100%;
+  background: #051622; /* Dark background */
 }
 
 .main-container {
   display: flex;
   flex-direction: column; /* Stack children vertically inside the main container */
+  
   flex: 1; /* Take up all available space besides the sidebar */
   height: 100%; /* Full height */
 }

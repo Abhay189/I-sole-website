@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import './LoginPage.css'; // Make sure this is the correct path to your CSS file
-import logoImage from './images/logo.png'; // Update with the correct path to your logo image
-import google from './images/google.png'; // Update with the correct path to your logo image
-import outlook from './images/outlook.png'; // Update with the correct path to your logo image
+import '../Styles/LoginPage.css'; // Make sure this is the correct path to your CSS file
+import logoImage from '../images/logo.png'; // Update with the correct path to your logo image
+import google from '../images/google.png'; // Update with the correct path to your logo image
+import outlook from '../images/outlook.png'; // Update with the correct path to your logo image
 import axios from 'axios'; // Import axios for making API requests
 import { useNavigate  } from 'react-router-dom';
 
+
+let connectionURL = localStorage.getItem('API_URL');
 const LoginPage = () => {
   const [username, setUsername] = useState(''); // Change to username
   const [password, setPassword] = useState('');
@@ -16,7 +18,7 @@ const LoginPage = () => {
 
     try {
       // Make a POST request to your backend sign-in endpoint
-      const response = await axios.post('https://i-sole-backend.com/signin', {
+      const response = await axios.post(`${connectionURL}/signin`, {
         username: username, // Use the username state variable
         password: password,
       });
@@ -27,14 +29,12 @@ const LoginPage = () => {
       
         // Store curr_username and patientID in local storage
         localStorage.setItem('curr_username', username);
-        localStorage.setItem('patientID', patientID);
-        localStorage.setItem('userRole', role);
       
         // Log curr_username for debugging
         console.log('curr_username:', username);
       
         // Redirect to your main application page or dashboard
-        navigate('/feedback');  // Redirect to '/feedback' route
+        navigate('/analytics');  // Redirect to '/analytics' route
       } else {
         // Authentication failed, handle the error (e.g., show an error message)
         console.error('Sign-in failed:', response.data.message);

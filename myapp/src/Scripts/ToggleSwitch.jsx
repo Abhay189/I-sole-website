@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './ToggleSwitch.css'; // Path to your CSS file
+import '../Styles/ToggleSwitch.css'; // Path to your CSS file
 
 function ToggleSwitch({ onToggle }) {
   const [selectedOption, setSelectedOption] = useState('Day');
