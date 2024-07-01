@@ -2,8 +2,6 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import '../Styles/AnalyticsPage.css'; // Make sure to create a corresponding Analytics.css file
 import axios from 'axios';
-import logo from '../images/logo.png';
-import profilePic from '../images/zeeshan.png'; // Replace with the logged-in user's profile picture
 import { useNavigate } from 'react-router-dom';
 import barchart from '../images/barchart.png';
 import linechart from '../images/linechart.png';
@@ -15,7 +13,6 @@ import ToggleSwitch from './ToggleSwitch';
 import glucoseDayChart from '../images/day.png';
 import glucoseWeekChart from '../images/week.png';
 import glucoseMonthChart from '../images/month.png';
-import profileImage from '../images/dummy_profile_image.png'
 import footImage from '../images/foot.png'
 import { firestore } from '../firebase';
 import { doc, collection, onSnapshot } from 'firebase/firestore';
@@ -51,31 +48,52 @@ function Analytics() {
   // State for the current plot to display
   const [currentPlot, setCurrentPlot] = useState('');
 
+  // Effect to set the currUsername from localStorage
   useEffect(() => {
-    setCurrUsername(localStorage.getItem('curr_username'));
-    // const docRef = doc(firestore, 'users', username);
+    const username = localStorage.getItem('curr_username');
+    setCurrUsername(username);
+  }, []); // Runs once after the initial render
 
-    console.log("User inside listner: ", currUsername)
+  // Effect to make API calls when currUsername changes
+  useEffect(() => {
+    if (currUsername) {
+      const fetchData = async () => {
+        try {
+          console.log("User inside listener: ", currUsername);
 
+          // Ensure that the username is available before making API calls
+          await getLatestGlucose();
+          await fetchPressureRiskData();
+          await fetchPersonalMetrics();
 
-    getLatestGlucose();
-    // fetchPressureRiskData();
-    fetchPersonalMetrics(); 
-    // Create a reference to the 'pressureData' subcollection
-    // const pressureDataCollectionRef = collection(docRef, 'pressureData');
+          // Additional calls to generate images and handle pressure data can be made here
+        } catch (error) {
+          console.error("Error fetching data: ", error);
+        }
+      };
 
-    // Set up a listener for changes in the 'pressureData' subcollection
-    // fetchPressureRiskData();
-    // const unsubscribe = onSnapshot(pressureDataCollectionRef, (querySnapshot) => {
-    //   // Handle changes in the pressure data
-    //   // console.log("Pressure data updated:", querySnapshot.docs);
-    //   fetchPressurePlotImage(footRegion); // Call fetchPressurePlotImage when pressure data is updated
-    //   fetchPressureRiskData();
-    // });
+      fetchData();
+    }
+  }, [currUsername]); // Runs when currUsername changes
+      
+      
+      //Create some more function calls to generate the Glucose Sensor Analytics images and store them for showing later on. 
 
-    // Clean up the listener when the component unmounts
-    // return () => unsubscribe();
-  }, []); // This useEffect runs when username changesa
+      // Create a reference to the 'pressureData' subcollection
+      // const pressureDataCollectionRef = collection(docRef, 'pressureData');
+
+      // Set up a listener for changes in the 'pressureData' subcollection
+      // fetchPressureRiskData();
+      // const unsubscribe = onSnapshot(pressureDataCollectionRef, (querySnapshot) => {
+      //   // Handle changes in the pressure data
+      //   // console.log("Pressure data updated:", querySnapshot.docs);
+      //   fetchPressurePlotImage(footRegion); // Call fetchPressurePlotImage when pressure data is updated
+      //   fetchPressureRiskData();
+      // });
+
+      // Clean up the listener when the component unmounts
+      // return () => unsubscribe();
+  // }, []); // This useEffect runs when username changesa
 
 
   const makePrediction = async () => {
@@ -257,7 +275,7 @@ function Analytics() {
       if (response.data.success) {
         console.log("Pressure risk data fetched successfully:", response.data);
         setRiskData(response.data.data);
-        setMaxPressure(response.data.maxPressure);
+        setMaxPressure(response.data.averagePressure);
       } else {
         console.error("Failed to fetch pressure risk data:", response.data.message);
       }
