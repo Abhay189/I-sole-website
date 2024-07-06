@@ -11,7 +11,7 @@ const App = () => {
 
   //Store the base API URL for usage in other pages.
   useEffect( () =>{
-    localStorage.setItem('API_URL', 'http://127.0.0.1:5000');
+    localStorage.setItem('API_URL', 'https://isole-api.shaktilab.org');
   }, []
   );
 

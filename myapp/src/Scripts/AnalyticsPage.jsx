@@ -107,7 +107,7 @@ function Analytics() {
       }
   
       console.log("After await latest glucose value: ", glucoseValues.bloodGlucose);
-
+  
       const data = {
         "input_data": {
           "glucose_level_value": glucoseValues.bloodGlucose,
@@ -124,7 +124,7 @@ function Analytics() {
       console.log("Data sent to plot prediction: ", data);
   
       const response = await axios.post(`${connectionURL}/plot-prediction`, data);
-
+  
       console.log(response);
   
       const { image, prediction_state, prediction_time } = response.data;
@@ -132,12 +132,14 @@ function Analytics() {
       console.log("Prediction State:", prediction_state);
       console.log("Prediction Time:", prediction_time);
   
+      // Assuming you want to display the image directly without saving it locally
+      const imageUrl = `data:image/png;base64,${image}`;
+  
+      // Update state or do further processing with the image URL
       setPredictionState(prediction_state);
       setPredictionTime(prediction_time);
-  
-      const imageUrl = `data:image/png;base64,${image}`;
-      setPredictionImage(imageUrl);
-      setshowGlucosePrediction(true);
+      setPredictionImage(imageUrl); // This sets the base64 image URL to state
+      setshowGlucosePrediction(true); // Set a flag to show the prediction UI
     } catch (error) {
       console.error('Error making the prediction:', error);
       if (error.response) {
@@ -145,6 +147,7 @@ function Analytics() {
       }
     }
   };
+  
   
 
   // This function fetches the latest glucose data for a given user.
@@ -230,13 +233,23 @@ function Analytics() {
     // console.log('footRegion: ', region)
     // console.log('fetchPressurePlotImage called')
 
-    const startTimestampEdmonton = '2024-04-02T04:30:21'
-    const endTimestampEdmonton = '2024-04-15T12:30:21'
+    // Get the current time and the time 30 minutes ago
+    const endTimestamp = new Date();
+    const startTimestamp = new Date(endTimestamp.getTime() - 30 * 60000); // 30 minutes in milliseconds
 
-    const url = `http://127.0.0.1:5000/plot_pressure?username=${username}&start_timestamp=${startTimestampEdmonton}&end_timestamp=${endTimestampEdmonton}&region=${region}`;
+    // Function to format the date to ISO string with microseconds
+    const formatTimestamp = (date) => {
+        const isoString = date.toISOString();
+        const [datePart, timePart] = isoString.split('T');
+        const [time, milli] = timePart.split('.');
+        const microseconds = milli.slice(0, 6); // Get the first 6 digits of the milliseconds
+        return `${datePart}T${time}.${microseconds}`;
+    };
 
-    // console.log('start time: ', startTimestampEdmonton)
-    // console.log('end time: ', endTimestampEdmonton)
+    const startTimestampEdmonton = formatTimestamp(startTimestamp);
+    const endTimestampEdmonton = formatTimestamp(endTimestamp);
+
+    const url = `${connectionURL}/plot_pressure?username=${username}&start_timestamp=${startTimestampEdmonton}&end_timestamp=${endTimestampEdmonton}&region=${region}`;
 
     // Make the GET request with the constructed URL
     axios.get(url, {
