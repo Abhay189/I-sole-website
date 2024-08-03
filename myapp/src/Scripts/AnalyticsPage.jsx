@@ -48,11 +48,31 @@ function Analytics() {
   // State for the current plot to display
   const [currentPlot, setCurrentPlot] = useState('');
 
+  const start_data_faker = async (currUsername) => {      
+    // Call the start_data_faker endpoint to start faking pressure and glucose data in the backend. 
+    console.log(`this is the current username ${currUsername}`);
+    axios.post(`${connectionURL}/start_data_faker`, { 'username': currUsername })
+        .then(response => {
+            console.log('Data faker started:', response.data);
+        })
+        .catch(error => {
+            console.error('Error starting data faker:', error);
+        });
+  }
+
   // Effect to set the currUsername from localStorage
   useEffect(() => {
     const username = localStorage.getItem('curr_username');
     setCurrUsername(username);
+
   }, []); // Runs once after the initial render
+
+  useEffect(()=>{
+    if(currUsername){
+      start_data_faker(currUsername);
+    } 
+  },[currUsername]
+  )
 
   // Effect to make API calls when currUsername changes
   useEffect(() => {
@@ -76,26 +96,6 @@ function Analytics() {
     }
   }, [currUsername]); // Runs when currUsername changes
       
-      
-      //Create some more function calls to generate the Glucose Sensor Analytics images and store them for showing later on. 
-
-      // Create a reference to the 'pressureData' subcollection
-      // const pressureDataCollectionRef = collection(docRef, 'pressureData');
-
-      // Set up a listener for changes in the 'pressureData' subcollection
-      // fetchPressureRiskData();
-      // const unsubscribe = onSnapshot(pressureDataCollectionRef, (querySnapshot) => {
-      //   // Handle changes in the pressure data
-      //   // console.log("Pressure data updated:", querySnapshot.docs);
-      //   fetchPressurePlotImage(footRegion); // Call fetchPressurePlotImage when pressure data is updated
-      //   fetchPressureRiskData();
-      // });
-
-      // Clean up the listener when the component unmounts
-      // return () => unsubscribe();
-  // }, []); // This useEffect runs when username changesa
-
-
   const makePrediction = async () => {
     try {
       const glucoseValues = await getLatestGlucose(); // Use the returned values here

@@ -6,6 +6,7 @@ import SignupPage from './Scripts/SignupPage';
 import LoginPage from './Scripts/LoginPage';
 import AnalyticsPage from './Scripts/AnalyticsPage';
 import Navbar from './Scripts/Navbar';
+import HomePage from './Scripts/HomePage';
 
 const App = () => {
 
@@ -23,7 +24,8 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
-        <Route path="*" element={<SignupPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
     </Router>
   );

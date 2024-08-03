@@ -6,14 +6,13 @@ import google from '../images/google.png'; // Update with the correct path to yo
 import outlook from '../images/outlook.png'; // Update with the correct path to your logo image
 import { useNavigate  } from 'react-router-dom';
 
-
-let connectionURL = localStorage.getItem('API_URL');
 const SignupPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState(''); // State for username
   const navigate = useNavigate();  // Hook to access the history instance
+  const [connectionURL, setConnectionURL] = useState(localStorage.getItem('API_URL') || '');
 
   useEffect(
     () => {
@@ -56,24 +55,6 @@ const SignupPage = () => {
       <div className="signup-form-container">
         <div className="signup-form">
           <h1>Create Account</h1>
-
-          <div className="social-signup">
-
-            <button className="google-signup">
-              <img src={google} alt="Google logo" /> {/* Replace with your image path */}
-              Sign up with Google
-            </button>
-
-            <button className="outlook-signup">
-              <img src={outlook} alt="Outlook logo" /> {/* Replace with your image path */}
-              Sign up with Outlook
-            </button>
-
-          </div>
-
-          <div className="divider">
-            <span>OR</span>
-          </div>
           <form onSubmit={handleSignUp}>
             <input
               type="text"

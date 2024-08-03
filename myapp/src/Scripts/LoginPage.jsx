@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../Styles/LoginPage.css'; // Make sure this is the correct path to your CSS file
 import logoImage from '../images/logo.png'; // Update with the correct path to your logo image
 import google from '../images/google.png'; // Update with the correct path to your logo image
@@ -7,14 +7,16 @@ import axios from 'axios'; // Import axios for making API requests
 import { useNavigate  } from 'react-router-dom';
 
 
-let connectionURL = localStorage.getItem('API_URL');
+// let connectionURL = localStorage.getItem('API_URL');
 const LoginPage = () => {
   const [username, setUsername] = useState(''); // Change to username
   const [password, setPassword] = useState('');
   const navigate = useNavigate();  // Hook to access the history instance
+  const [connectionURL, setConnectionURL] = useState(localStorage.getItem('API_URL') || '');
 
   const handleSignIn = async (e) => { // Change the function name to handleSignIn
     e.preventDefault();
+    console.log(connectionURL);
 
     try {
       // Make a POST request to your backend sign-in endpoint
@@ -64,24 +66,6 @@ const LoginPage = () => {
       <div className="signup-form-container">
         <div className="signup-form">
           <h1>Sign In</h1>
-
-          <div className="social-signup">
-
-            <button className="google-signup">
-              <img src={google} alt="Google logo" /> {/* Replace with your image path */}
-              Sign in with Google
-            </button>
-
-            <button className="outlook-signup">
-              <img src={outlook} alt="Outlook logo" /> {/* Replace with your image path */}
-              Sign in with Outlook
-            </button>
-
-          </div>
-
-          <div className="divider">
-            <span>OR</span>
-          </div>
           <form onSubmit={handleSignIn}>
             <input
               type="text" 
